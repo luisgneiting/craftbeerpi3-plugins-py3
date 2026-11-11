@@ -14,7 +14,7 @@ Compatible with the [`python3-flask3-compat`](https://github.com/luisgneiting/cr
 | `PIDBoil` | ✅ | No changes needed |
 | `PIDAutoTune` | ✅ | Minor fix: `dict.keys()` → `list` |
 | `fermenter_hysteresis` | ✅ | No changes needed |
-| `ARCHIVED/AmazonAlexaPlugin` | ⚠️ | Syntax fixed for Python 3, but `flask_ask` is unmaintained for Flask 3 |
+| `AmazonAlexaPlugin` | ✅ | Rewritten for `flask-ask-sdk` (Flask 3 compatible) |
 
 ---
 
@@ -28,6 +28,12 @@ git clone https://github.com/luisgneiting/craftbeerpi3-plugins-py3 plugins
 ```
 
 > **Note:** This replaces the entire `plugins/` directory. If you have custom plugins there, back them up first.
+
+Then install extra dependencies for the Alexa plugin (if you want to use it):
+
+```bash
+pip install flask-ask-sdk ask-sdk-core --break-system-packages
+```
 
 To update later:
 
@@ -71,14 +77,24 @@ Outputs Kp/Ki/Kd values as CraftBeerPi notifications when tuning completes.
 ### fermenter_hysteresis
 Hysteresis controller for fermenters with independent heater and cooler control. Maintains fermentation temperature using configurable offset pairs for heater on/off and cooler on/off.
 
----
+### AmazonAlexaPlugin
+Amazon Alexa voice interface for CraftBeerPi3. Rewritten to use the official **Alexa Skills Kit SDK** (`flask-ask-sdk`), compatible with Flask 3 and Python 3.13.
 
-## Archived plugins
+**Supported voice commands:**
+- *"Alexa, ask CraftBeerPi for an update"* — reports active step and all kettle temperatures
+- *"Alexa, ask CraftBeerPi for the temperature of [sensor name]"*
+- *"Alexa, ask CraftBeerPi for the temperature of [kettle name]"*
+- *"Alexa, ask CraftBeerPi to toggle [actor name]"* — switches an actor on or off
+- *"Alexa, ask CraftBeerPi for the current step"*
+- *"Alexa, goodbye"*
 
-### ARCHIVED/AmazonAlexaPlugin
-Amazon Alexa voice interface for CraftBeerPi3. Python 3 syntax has been corrected (`print` statements, `iteritems()` → `items()`), but the `flask_ask` dependency is unmaintained and incompatible with Flask 3.
-
-Archived until a compatible Alexa Skills Kit integration is available.
+**Setup:**
+1. Register an Alexa Skill at [Amazon Developer Console](https://developer.amazon.com/alexa/console/ask)
+2. Set the skill endpoint to `https://<your-pi-address>/alexa` (Amazon requires HTTPS — use ngrok or a reverse proxy with a TLS certificate)
+3. Set your Skill ID in the plugin or via environment variable:
+   ```bash
+   export ALEXA_SKILL_ID="amzn1.ask.skill.YOUR_SKILL_ID_HERE"
+   ```
 
 ---
 
@@ -88,3 +104,4 @@ Archived until a compatible Alexa Skills Kit integration is available.
 - Flask 3.x
 - CraftBeerPi3 fork: [`luisgneiting/craftbeerpi3`](https://github.com/luisgneiting/craftbeerpi3) (branch `python3-flask3-compat`)
 - Raspberry Pi OS 13 (Trixie) — or any system with `rpi-lgpio` for GPIO support
+- For AmazonAlexaPlugin: `flask-ask-sdk` and `ask-sdk-core`
